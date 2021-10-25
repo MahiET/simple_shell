@@ -113,9 +113,9 @@ Other comparison operators you can use include:
 
 Authors
 
-Meaza Lemma	Github	meazalemma2020@gmail.com
+Meaza Lemma	Github	<meazalemma2020@gmail.com>
 
-Ephrem Abeb 	Github	ephremyeabe@gmail.com
+Ephrem Abebe 	Github	<ephremyeabe@gmail.com>
 
 # simple_shell
 
