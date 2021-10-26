@@ -1,90 +1,48 @@
-#ifndef __SHELL_H__
-#define __SHELL_H__
+#ifndef _SHELL_H_
+#define _SHELL_H_
 
-/*libraries*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <fcntl.h>
+#define LSH_TOK_BUFSIZE 64
+#define LSH_TOK_DELIM " \t\r\n\a"
+
+#include <sys/wait.h>
 #include <sys/types.h>
-#include <stdbool.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <signal.h>
 
-/*string_handlers*/
-char *_strdup(char *str);
-char *_strchr(char *str, int chr);
-int _strlen(const char *str);
+
+/* string manipulations functions */
+int _strlen(char *s);
+char *_strcpy(char *dest, char *src);
+char *_strncat(char *dest, char *src);
 int _strcmp(char *s1, char *s2);
-int _strncmp(const char *first, const char *second, int n);
+char *_strdup(char *str);
+void print_string(char *string);
+char *_memcpy(char *dest, char *Src, unsigned int n);
 
-/*command_handler*/
-char *_getpath(void);
-char **token_maker(char *str);
-void exec_cmd(char *c, char **cmd);
-char *pathappend(char *path, char *cmd);
-char *try_paths(char **p, char *cmd);
+/* shell basic process */
+int main(int argc, char *argv[], char *env[]);
+int shell_loop(char **env);
+char *read_command(char **env);
+char **split_command(char *string);
+void forkwaitexec(int status, char **argv, int *count, int *stad_exit);
+void rm_new_line(char *string);
+int _path(char *args, char **argv, char **env, int *stad_exit);
+char *print_path(char *der, char *args);
+char **_parser(char *string);
+int printenv(char **env, int *stad_exit);
+void built_in(char *string, char **argv, char **env, int *ex_it);
+void simple_print_shell(char *string);
+void print_count(int *count);
+int _putchar(char c);
+int func_ctrl_d(char *string, ssize_t read, int *stad_exit);
 
-/*built-ins*/
-void env_builtin(void);
-void exiter(char **cmd, char *b);
-int is_builtin(char **cmd, char *b);
-void prompt_printer(void);
-void sighandle(int n);
+/* function signal */
+void sighandler(int sig);
 
-/*helper function*/
-int check_type(char **cmd, char *b);
-void free_cmds(char **m);
+#endif /* _SHELL_H_ */
 
-
-
-
-/*environment variables*/
-extern __sighandler_t signal(int __sig, __sighandler_t __handler);
-extern char **environ;
-
-/**
- * struct builtins - Handles builtins
- * @env: First member
- * @exit: Second member
- *
- * Description: builtin commands
- */
-struct builtins
-{
-	char *env;
-	char *exit;
-
-} builtins;
-
-
-
-/**
- * struct info - Status info struct
- * @final_exit: First member
- * @ln_count: Second member
- *
- * Description: Used in error handling
- */
-struct info
-{
-	int final_exit;
-	int ln_count;
-} info;
-
-
-/**
- * struct flags - Holds flags
- * @interactive: First member
- *
- * Description: used to handle
- * boolean switches
- */
-struct flags
-{
-	bool interactive;
-} flags;
-
-
-#endif /* __SHELL_H__ */
