@@ -1,48 +1,116 @@
-#ifndef _SHELL_H_
-#define _SHELL_H_
+#ifndef SHELL_H
+#define SHELL_H
 
-#define LSH_TOK_BUFSIZE 64
-#define LSH_TOK_DELIM " \t\r\n\a"
-
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
+/* header files */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
+#include <errno.h>
 
+/* Global variable */
+extern char **environ;
 
-/* string manipulations functions */
-int _strlen(char *s);
-char *_strcpy(char *dest, char *src);
-char *_strncat(char *dest, char *src);
-int _strcmp(char *s1, char *s2);
+/* Macros */
+#define BUFSIZE 256
+#define TOKENSIZE 64
+#define PRINT(c) (write(STDOUT_FILENO, c, _strlen(c)))
+#define PROMPT "$ "
+#define SUCCESS (1)
+#define FAIL (-1)
+#define NEUTRAL (0)
+
+/* Struct */
+
+/**
+ * struct sh_data - Global data structure
+ * @line: the line input
+ * @args: the arguments token
+ * @error_msg: the global path
+ * @cmd: the parsed command
+ * @index: the command index
+ * @oldpwd: the old path visited
+ * @env: the environnment
+ *
+ * Description: A structure contains all the variables needed to manage
+ * the program, memory and accessability
+ */
+typedef struct sh_data
+{
+	char *line;
+	char **args;
+	char *cmd;
+	char *error_msg;
+	char *oldpwd;
+	unsigned long int index;
+	char *env;
+} sh_t;
+/**
+ * struct builtin - Manage the builtin functions
+ * @cmd: the command line on string form
+ * @f: the associated function
+ *
+ * Description: this struct made to manage builtins cmd
+ */
+typedef struct builtin
+{
+	char *cmd;
+	int (*f)(sh_t *data);
+} blt_t;
+/* ----------Process prototype------------*/
+int read_line(sh_t *);
+int split_line(sh_t *);
+int parse_line(sh_t *);
+int process_cmd(sh_t *);
+
+/* ----------String prototype------------*/
 char *_strdup(char *str);
-void print_string(char *string);
-char *_memcpy(char *dest, char *Src, unsigned int n);
+char *_strcat(char *first, char *second);
+int _strlen(char *str);
+char *_strchr(char *str, char c);
+int _strcmp(char *s1, char *s2);
 
-/* shell basic process */
-int main(int argc, char *argv[], char *env[]);
-int shell_loop(char **env);
-char *read_command(char **env);
-char **split_command(char *string);
-void forkwaitexec(int status, char **argv, int *count, int *stad_exit);
-void rm_new_line(char *string);
-int _path(char *args, char **argv, char **env, int *stad_exit);
-char *print_path(char *der, char *args);
-char **_parser(char *string);
-int printenv(char **env, int *stad_exit);
-void built_in(char *string, char **argv, char **env, int *ex_it);
-void simple_print_shell(char *string);
-void print_count(int *count);
-int _putchar(char c);
-int func_ctrl_d(char *string, ssize_t read, int *stad_exit);
+/* ----------More String prototype-------*/
+char *_strcpy(char *dest, char *source);
 
-/* function signal */
-void sighandler(int sig);
+/* ----------Memory prototype------------*/
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+char *_memset(char *s, char byt, unsigned int n);
+char *_memcpy(char *dest, char *src, unsigned int n);
+int free_data(sh_t *);
 
-#endif /* _SHELL_H_ */
+/* ----------Tools prototype-------------*/
+void *fill_an_array(void *a, int el, unsigned int len);
+void signal_handler(int signo);
+char *_getenv(char *path_name);
+void index_cmd(sh_t *data);
+void array_rev(char *arr, int len);
+
+/* ----------More tools prototype--------*/
+char *_itoa(unsigned int n);
+int intlen(int num);
+int _atoi(char *c);
+int print_error(sh_t *data);
+int write_history(sh_t *data);
+int _isalpha(int c);
+
+/* -------------Builtins-----------------*/
+int abort_prg(sh_t *data);
+int change_dir(sh_t *data);
+int display_help(sh_t *data);
+int handle_builtin(sh_t *data);
+int check_builtin(sh_t *data);
+
+/* -------------Parse-----------------*/
+int is_path_form(sh_t *data);
+void is_short_form(sh_t *data);
+int is_builtin(sh_t *data);
+
+#endif /* SHELL_H */
+
 
