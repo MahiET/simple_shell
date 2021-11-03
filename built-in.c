@@ -1,19 +1,23 @@
 #include "shell.h"
-
 /**
- * main- entry point to the shell
- * @argc: number of arguments
- * @argv: entered arguments to the CL
+ * built_in - compare argv passed with the builtins commands
+ * @string: pointer with the line saved
+ * @argv: the arguments passed
  * @env: environment variable
- * Return: 0 in success- Otherwise 1.
+ * @ex_it: integer
  */
-int main(int argc, char **argv, char **env)
+void built_in(char *string, char **argv, char **env, int *ex_it)
 {
-	(void)argc, (void)**argv;
-
-	shell_loop(env);
-	return (EXIT_SUCCESS);
+    if (_strcmp(argv[0], "exit") == 0)
+    {
+        free(argv);
+        free(string);
+        exit(*ex_it);
+    }
+    if (_strcmp(argv[0], "env") == 0)
+        printenv(env, ex_it);
 }
+
 
 
 
