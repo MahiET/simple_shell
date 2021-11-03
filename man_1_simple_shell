@@ -1,4 +1,5 @@
 .Simple Shell Manual Page
+Oct 25,2021
 
 .SH NAME
 
@@ -18,51 +19,62 @@ The shell is a command line interface (CLI) program that takes commands from the
 From input, the first argument is assumed to be an executable command file. It follows the parameters taken by that particular command.
 
 .B hsh
-is the executable that will interpret the command. It executes it and then, exit. With exit, an exit status returns with the status of the previous command executed. For instance, status is 0 on non-execution.
-
-.SH INTEREACTIVE MODE EXAMPLE
+is the executable that will interpret the command. It executes it and then, exit. With exit, an exit status returns with the s.TH HSH 1
+.SH NAME
+hsh \- Holberton Shell	
+.SH SYNOPSIS
+.B hsh
+[command] [options ...]
+.SH COPYRIGHT
+hsh \- is a holberton school first trimester project
+.SH DESCRIPTION
+.B hsh
+is a shell command interpreter that executes command read from the standard input or from file.
+.B hsh
+is intend to be a clone of the standard command interpreter of 
+.B Unix
+and 
+.B Unix-like
+system.
+.SH OPTIONS
+A  simple command is a sequence of optional variable assignments followed by blank-separated words and redirections, 
+and terminated by a control operator.  The first word specifies the command to be
+executed, and is passed as argument zero.  The remaining words are passed as arguments to the invoked command.
 .PP
-$ ./hsh
-.br
-shell$ /bin/ls
-.br
-hsh main.c shell.c
-.br
-shell$ exit
-.br
-$
-.br
+The return value of a simple command is its exit status, or 128+n if the command is terminated by signal n.
+.SS
+Piplines
+A pipeline is a sequence of one or more commands separated by one of the control operators | or |&.  The format for a pipeline is:
 .PP
+[command [..ARGS]] [| - |&] [command2 [..ARGS]]
 .PP
-.SH NON-INTERACTIVE MODE EXAMPLE
+The standard output of command is connected via a pipe to the standard input of command2.  This connection is performed before any redirections specified by the command (see REDIRECTION below).   If
+|&  is  used,  command's standard error, in addition to its standard output, is connected to command2's standard input through the pipe; it is shorthand for 2>&1 |.  This implicit redirection of the
+standard error to the standard output is performed after any redirections specified by the command.
+.SS Lists
+
+A list is a sequence of one or more pipelines separated by one of the operators ;, &, &&, or ||, and optionally terminated by one of ;, &, or <newline>.
+Of these list operators, && and || have equal precedence, followed by ; and &, which have equal precedence.
+A sequence of one or more newlines may appear in a list instead of a semicolon to delimit commands.
 .PP
-$ echo "/bin/ls" | . /hsh
-.br
-hsh main.c shell.c
-.br
+If  a command is terminated by the control operator &, the shell executes the command in the background in a subshell.  The shell does not wait for the command to finish, and the return status is 0.
+Commands separated by a ; are executed sequentially; the shell waits for each command to terminate in turn.  The return status is the exit status of the last command executed.
+AND and OR lists are sequences of one or more pipelines separated by the && and || control operators, respectively.  AND and OR lists are executed with left associativity.  An AND list has the form
+.PP
+command1 && command2
+.PP
+command2 is executed if, and only if, command1 returns an exit status of zero.
+.PP
+An OR list has the form:
+.PP
+command1 || command2
+.PP
+command2 is executed if and only if command1 returns a non-zero exit status.  The return status of AND and OR lists is the exit status of the last command executed in the list.
+.SH AUTHORS
+Meaza Lemma <'meazalemma2020@gmail.com'>
+Ephrem Abebe <'ephremyeabe@gmail.com'>
+.SH VERSIONS
+.B hsh
+V1.0.0
 
-.SH ENVIRONMENT
-When the simple shell is invoked, it is given an array of strings called the enviroment. Note that string is a copy. The strings are environment variables and are represented in this format
-.B name=value
-
-.SH BUILTIN COMMANDS
-The following commands below are called and handled directly in the shell. Therefore, these commands do not need to call upon a child process to be executed. However, with the exit builtin it returns an exits status of 0 on successful execution. In failure, the exti will return 0 when the command invoked can no execute. also, it will return 1 when the command is not found. It will return a value of 2 in failure misuse of the shell builtin
-.br
-the following commands are executed in the shell as builtins
-
-.TP
-.B exit
-- Exits the shell
-
-.TP
-.B env
-- Prints the variables from the current enviroment
-
-.SH BUGS
-No known bugs at this writing (Oct 21, 2021).
-Please report any issues to the authors.
-
-.SH AUTHOR
-Ephrem Abebe <ephremyeabe@gmail.com>
-Meaza Lemma  <meazalemma2020@gmail.com>
 
