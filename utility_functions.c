@@ -1,4 +1,4 @@
-#include "holberton.h"
+#include "shell.h"
 
 /**
  * _strcmp - compares two strings to find out if they are exactly the same
@@ -78,3 +78,4 @@ int _strlen(char *s)
 
 	return (i);
 }
+
