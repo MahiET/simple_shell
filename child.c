@@ -1,32 +1,59 @@
 #include "shell.h"
 
 /**
- * child - function for child process
- * @fullpath: full path of executable
- * @tokens: tokenized user input
- * Return: 0 on success
+ * create_child - A function that creates a sub process.
+ * @command: The pointer to tokenized command
+ * @name: The pointer to the name of shell.
+ * @env: The pointer to the enviromental variables.
+ * @cicles: Number of executed cicles.
+ * Return: Nothing.
  */
-int child(char *fullpath, char **tokens)
+void create_child(char **command, char *name, char **env, int cicles)
 {
-	pid_t child_pid;
-	int status;
-	int execve_status;
-	char **envp = environ;
+	int pid = 0;
+	int status = 0;
+	int wait_error = 0;
 
-	child_pid = fork();
-	if (child_pid == -1)
+	pid = fork();
+	if (pid < 0)
 	{
-		errors(1);
-		exit(EXIT_FAILURE);
+		perror("Error: ");
+		free_exit(command);
 	}
-	if (child_pid == 0)
+	else if (pid == 0)
 	{
-		execve_status = execve(fullpath, tokens, envp);
-		if (execve_status == -1)
-			return (-1);
+		execute(command, name, env, cicles);
+		free_dp(command);
 	}
 	else
-		wait(&status);
-
-	return (0);
+	{
+		wait_error = waitpid(pid, &status, 0);
+		if (wait_error < 0)
+		{
+			free_exit(command);
+		}
+		free_dp(command);
+	}
 }
+
+
+/**
+  * change_dir - Afunction that changes working directory.
+  * @path: The new current working directory.
+  * Return: 0 on success, -1 on failure.
+  */
+int change_dir(const char *path)
+{
+	char *buf = NULL;
+	size_t size = 1024;
+
+	if (path == NULL)
+		path = getcwd(buf, size);
+	if (chdir(path) == -1)
+	{
+		perror(path);
+		return (98);
+	}
+	return (1);
+}
+
