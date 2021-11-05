@@ -1,156 +1,182 @@
-.Simple Shell Manual Page "20 October 2021"
-
+.TH SHELL 1 "october 20 2021" "Alx" "0x15. C - Simple Shell"
 .SH NAME
-
-.B simple_shell - hsh
-
-- command line interpreter or shell
-
+.B shell\fR \- simple UNIX command interpreter
 .SH SYNOPSIS
-
-.B  ./hsh
-
-.I (no options yet)
-
+.B shellby\fR [\fIfilename\fR]
 .SH DESCRIPTION
+.B Shell\fR is a simple UNIX command language interpreter that reads commands from either a file or standard input and executes them.
+
+.B Invocation
+.in +2n
+\fBShellby\fR can be invoked both interactively and non-interactively.
+If \fBshell\fR is invoked with standard input not connected to a terminal, it reads and executes received commands in order.
+
+If \fBshellby\fR is invoked with standard input connected to a terminal (determined by \fIisatty(3)\fR), an \fIinteractive\fR shell is opened.
+When executing interactively, \fBshellby\fR displays the prompt \fI$ \fR when it is ready to read a command.
+
+Alternatively, if command line arguments are supplied upon invocation, \fBshellby\fR treats the first argument as a file from which to read commands.
+The supplied file should contain one command per line.
+.B Shellby\fR runs each of the commands contained in the file in order before exiting.
+.in
+
+.B Environment
+.in +2n
+Upon invocation, \fBshellby\fR receives and copies the environment of the parent process in which it was exeucted.
+This \fBenvironment\fR is an array of \fIname-value\fR strings describing variables in the format \fINAME=VALUE\fR.
+.in
+
+.B Command Execution
+.in +2n
+After receiving a command, \fBshellby\fR tokenizes it into words using \fB" "\fR as a delimiter.
+The first word is considered the command and all remaining words are considered arguments to that command.
+.B Shellby\fR then proceeds with the following actions:
 
-The shell is a command line interface (CLI) program that takes commands from the keyboard and give
-s them to the operating system to perform.
+.RS
+1. If the first character of the command is neither a slash (\fI\\\fR) nor dot (\fI.\fR), the shell searches for it in the list of shell builtins.
+If there exists a shell builtin by that name, the builtin is invoked.
+.RE
 
-.SH ARGUMENTS
+.RS
+2. If the first character of the command is none of a slash (\fI\\\fR), dot (\fI.\fR), nor builtin, \fBshellby\fR searches each element of the
+\fBPATH\fR environmental variable for a directory containing an executable file by that name.
+.RE
 
-From input, the first argument is assumed to be an executable command file. It follows the parameters taken by that particular command.
+.RS
+3. If the first character of the command is a slash (\fI\\\fR) or dot (\fI.\fR) or either of the above searches was successful,
+the shell executes the named program with any remaining arguments given in a separate execution environment.
+.RE
 
-.B hsh
+.B Exit Status
+.in +2n
+.B Shellby\fR returns the exit status of the last command executed, unless a syntax error occurs, with zero indicating success and non-zero indicating failure.
 
-is the executable that will interpret the command. It executes it and then, exit. With exit, an exit status returns with the s.TH HSH 1
+If a command is not found, the return status is 127; if a command is found but is not executable, the return status is 126.
 
-.SH NAME
+All builtins return zero on success and one or two on incorrect usage (indicated by a corresponding error message).
+.in
 
-hsh \- Simple Shell	
+.B Signals
+.in +2n
+While running in interactive mode, \fBshellby\fR ignores the keyboard input \fBCtrl+c\fR.
+Alternatively, an input of end-of-file (\fBCtrl+d\fR) will exit the program.
+.in
 
-.SH SYNOPSIS
+.B Variable Replacement
+.in +2n
+.B Shellby\fR inerprets the \fI$\fR character for variable replacement:
 
-.B hsh
+.RS
+.B $ENV_VARIABLE\fR	\fIENV_VARIABLE\fR is subsituted with its value.
+.RE
 
-[command] [options ...]
+.RS
+.B $?\fR			\fI?\fR is substituted with the return value of the last program executed.
+.RE
 
-.SH COPYRIGHT
+.RS
+.B $$\FR			The second \fI$\fR is substituted with the current process ID.
+.RE
 
-hsh \- is a holberton school first trimester project
+.B Comments
+.in +2n
+.B Shellby\fR ignores all words and characters preceeded by a \fI#\fR character on a line.
+.in
 
-.SH DESCRIPTION
+.B Operators
+.in +2n
 
-.B hsh
-is a shell command interpreter that executes command read from the standard input or from file.
+.RS
+.B ;\fR - Command separator
+.RS
+Commands separated by a \fI;\fR are executed sequentially.
+.RE
 
-.B hsh
+.B &&\fR - AND logical operator
+.RS
+.I command1\fR && \fIcommand2\fR: \fIcommand2\fR is executed if, and only if, \fIcommand1\fR returns an exit status of zero.
+.RE
 
-is intend to be a clone of the standard command interpreter of 
+.B ||\fR - OR logical operator
+.RS
+.I command1\fR || \fIcommand2\fR: \fIcommand2\fR is executed if, and only if, \fIcommand1\fR returns a non-zero exit status.
+.RE
 
-.B Unix
-and 
+The operators \fI&&\fR and \fI||\fR have equal precedence, followed by \fI;\fR.
+.RE
 
-.B Unix-like
+.B Shellby Builtin Commands
+.in +2n
 
-system.
+.RS
+.B cd
+.RS
+Usage: .B cd [DIRECTORY]
 
-.SH OPTIONS
+Changes the current directory of the process to \fBDIRECTORY\fR.
 
-A  simple command is a sequence of optional variable assignments followed by blank-separated wordsand redirections, 
+If no argument is given, the command is interpreted as \fBcd $HOME\fR.
 
-and terminated by a control operator.  The first word specifies the command to be
+If the argument \fB-\fR is given, the command is interpreted as \fBcd $OLDPWD\fR.
 
-executed, and is passed as argument zero.  The remaining words are passed as arguments to the invo
+The environment variables \fBPWD\fR and \fBOLDPWD\fR are updated after a change of directory.
+.RE
 
-ked command.
+.B alias
+.RS
+Usage: \fBalias [NAME[='VALUE'] ...]\fR
 
-.PP
+Handles aliases.
 
-The return value of a simple command is its exit status, or 128+n if the command is terminated by signal n.
+.I alias\fR: Prints a list of all aliases, one per line, in the form \fINAME='VALUE'\fR.
 
-.SS
+.I alias NAME [NAME2 ...]\fR: Prints the aliases \fINAME\fR, \fINAME2\fR, etc. one per line, in the form \fINAME='VALUE'\fR.
 
-Piplines
+.I alias NAME='VALUE' [...]\fR: Defines an alias for each \fINAME\fR whose \fIVALUE\fR is given.
+If \fIname\fR is already an alias, its value is replaced with \fIVALUE\fR.
+.RE
 
-A pipeline is a sequence of one or more commands separated by one of the control operators | or |&
+.B exit
+.RS
+Usage: \fBexit [STATUS]\fR
 
-.  The format for a pipeline is:
+Exits the shell.
 
-.PP
+The \fBSTATUS\fR argument is the integer used to exit the shell.
 
-[command [..ARGS]] [| - |&] [command2 [..ARGS]]
+If no argument is given, the command is interpreted as \fBexit 0\fR.
+.RE
 
-.PP
+.B env
+.RS
+Usage: \fBenv\fR
 
-The standard output of command is connected via a pipe to the standard input of command2.  This connection is performed before any redirections specified by the command (see REDIRECTION below).
+Prints the current environment.
+.RE
 
-If
+.B setenv
+.RS
+Usage: \fBsetenv [VARIABLE] [VALUE]\fR
 
-|&  is  used,  command's standard error, in addition to its standard output, is connected to comma
+Initializes a new environment variable, or modifies an existing one.
 
-nd2's standard input through the pipe; it is shorthand for 2>&1 |.  This implicit redirection of t
+Upon failure, prints a message to \fBstderr\fR
+.RE
 
-he standard error to the standard output is performed after any redirections specified by the command.
+.B unsetenv
+.RS
+Usage: \fBunsetenv [VARIABLE]\fR
 
-.SS Lists
+Removes an environmental variable.
 
-A list is a sequence of one or more pipelines separated by one of the operators ;, &, &&, or ||, a
+Upon failure, prints a message to \fBstderr\fR.
+.RE
+.RE
+.in
 
-nd optionally terminated by one of ;, &, or <newline>.
+.SH SEE ALSO
+access(2), chdir(2), execve(2), _exit(2), exit(3), fflush(3), fork(2), free(3), isatty(3), getcwd(3), malloc(3), open(2), read(2), sh(1), signal(2), stat(2), wait(2), write(2)
 
-Of these list operators, && and || have equal precedence, followed by ; and &, which have equal pr
-
-ecedence.
-
-A sequence of one or more newlines may appear in a list instead of a semicolon to delimit commands
-.
-
-.PP
-
-If  a command is terminated by the control operator &, the shell executes the command in the backg
-
-round in a subshell.  The shell does not wait for the command to finish, and the return status is 0.
-
-Commands separated by a ; are executed sequentially; the shell waits for each command to terminate
-
-in turn.  The return status is the exit status of the last command executed.
-
-AND and OR lists are sequences of one or more pipelines separated by the && and || control operato
-
-rs, respectively.  AND and OR lists are executed with left associativity.  An AND list has the form
-
-.PP
-
-command1 && command2
-
-.PP
-
-command2 is executed if, and only if, command1 returns an exit status of zero.
-
-.PP
-
-An OR list has the form:
-
-.PP
-
-command1 || command2
-
-.PP
-
-command2 is executed if and only if command1 returns a non-zero exit status.  The return status of
-
-AND and OR lists is the exit status of the last command executed in the list.
-
-.SH AUTHORS
-
-Meaza Lemma <'meazalemma2020@gmail.com'>
-Ephrem Abebe <'ephremyeabe@gmail.com'>
-
-.SH VERSIONS
-
-.B hsh
-
-V1.0.0
-
-
+.B Shellby\fR emulates basic functionality of the \fBsh\fR shell.
+This man page borrows from the corresponding man pages sh(1) and dash(1).
+.SH AUTHOR
+Meaza Lemma and Ephrem Abebe 
