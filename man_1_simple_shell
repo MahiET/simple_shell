@@ -36,7 +36,7 @@ $  ls -l
 -rw-r--r-- 1 abina 197609 1372 Oct 30 11:15 f_exit.c
 
 .SH AUTHOR'S				
--Written by Meaza Lemma  and Ephrem Abebe <ephremyeabe@gmail.com>
+-Written by Meaza Lemma<>  and Ephrem Abebe <ephremyeabe@gmail.com>
 
 .SH BUGS
 There were no errors in the testing time of this code (October 30, 2021).
