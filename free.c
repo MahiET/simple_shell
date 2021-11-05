@@ -1,39 +1,51 @@
 #include "shell.h"
 
 /**
- * free_all - frees all malloc'd space at end of main loop
- * @tokens: pointer to tokens array
- * @path: pointer to path variable
- * @line: pointer to user input buffer
- * @fullpath: pointer to full path
- * @flag: flag marking if full_path was malloc'd
- * Return: void
+ * free_dp - A function that frees all the memory allocated for command.
+ * @command: The pointer to allocated memory to free.
+ * Return: Nothing.
  */
-void free_all(char **tokens, char *path, char *line, char *fullpath, int flag)
+void free_dp(char **command)
 {
-	free(path);
-	free(tokens);
-	free(line);
-	if (flag == 1)
-		free(fullpath);
-}
+	size_t i = 0;
 
-/**
- * free_dp - free double pointer
- * @array: double pointer to free
- * @length: length of double pointer
- * Return: void
- */
-void free_dp(char **array, unsigned int length)
-{
-	unsigned int i;
+	if (command == NULL)
+		return;
 
-	i = 0;
-	while (i < length)
+	while (command[i])
 	{
-		free(array[i]);
+		free(command[i]);
 		i++;
 	}
-	free(array);
+
+	if (command[i] == NULL)
+		free(command[i]);
+	free(command);
 }
+
+
+/**
+ * free_exit - A function that frees all the memory allocated and exit.
+ * @command: The pointer to allocated command memory to free.
+ * Return: Nothing.
+ */
+void free_exit(char **command)
+{
+	size_t i = 0;
+
+	if (command == NULL)
+		return;
+
+	while (command[i])
+	{
+		free(command[i]);
+		i++;
+	}
+
+	if (command[i] == NULL)
+		free(command[i]);
+	free(command);
+	exit(EXIT_FAILURE);
+}
+
 
