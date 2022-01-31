@@ -1,48 +1,89 @@
 #ifndef _SHELL_H_
 #define _SHELL_H_
 
-#define LSH_TOK_BUFSIZE 64
-#define LSH_TOK_DELIM " \t\r\n\a"
-
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
-#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <limits.h>
 #include <signal.h>
 
 
-/* string manipulations functions */
-int _strlen(char *s);
-char *_strcpy(char *dest, char *src);
-char *_strncat(char *dest, char *src);
-int _strcmp(char *s1, char *s2);
-char *_strdup(char *str);
-void print_string(char *string);
-char *_memcpy(char *dest, char *Src, unsigned int n);
+#define UNUSED(x) (void)(x)
 
-/* shell basic process */
-int main(int argc, char *argv[], char *env[]);
-int shell_loop(char **env);
-char *read_command(char **env);
-char **split_command(char *string);
-void forkwaitexec(int status, char **argv, int *count, int *stad_exit);
-void rm_new_line(char *string);
-int _path(char *args, char **argv, char **env, int *stad_exit);
-char *print_path(char *der, char *args);
-char **_parser(char *string);
-int printenv(char **env, int *stad_exit);
-void built_in(char *string, char **argv, char **env, int *ex_it);
-void simple_print_shell(char *string);
-void print_count(int *count);
-int _putchar(char c);
-int func_ctrl_d(char *string, ssize_t read, int *stad_exit);
+/**
+ * struct input - variables
+ * @tokens: command line arguments
+ * @buffer: buffer of command
+ * @env: environment variables
+ * @count: count of commands entered
+ * @argv: arguments at opening of shell
+ * @status: exit status
+ * @commands: commands to execute
+ */
+typedef struct input
+{
+	char **tokens;
+	char *buffer;
+	char **env;
+	size_t count;
+	char **argv;
+	int status;
+	char **commands;
+} input_t;
 
-/* function signal */
-void sighandler(int sig);
+/**
+ * struct builtins - struct for the builtin functions
+ * @name: name of builtin command
+ * @f: function for corresponding builtin
+ */
+typedef struct builtins
+{
+	char *name;
+	void (*f)(input_t *);
+} builtins_t;
+
+void sig_handler(int sig_handler);
+char **init_env(char **env);
+void free_environ(char **env);
+
+ssize_t _puts(char *s);
+char *_strdup(char *duplicate);
+char *_strcat(char *dest, char *src);
+unsigned int _strlen(char *s);
+
+/* memory management: _realloc.c */
+char **_realloc(char **ptr, size_t *size);
+
+void (*_builtins(input_t *inputs))(input_t *inputs);
+void _exit_(input_t *inputs);
+void _env(input_t *inputs);
+void _setenv(input_t *inputs);
+void _unsetenv(input_t *inputs);
+
+int _strncmp(char *s1, char *s2);
+
+
+void add_env(input_t *inputs);
+char **find_env(char **env, char *path);
+char *add_value(char *path, char *value);
+int _atoi(char *s);
+
+void check_path(input_t *inputs);
+int _execute(char *command, input_t *inputs);
+char *find_path(char **env);
+int exec_cwd(input_t *inputs);
+int check_dir(char *s);
+
+void _error(input_t *inputs, char *message);
+void _printer(char *str);
+char *_int_str(unsigned int count);
+
+/* _strtok & tokenize: _strtok.c & tokenizer.c */
+unsigned int matching(char c, const char *str);
+char *_strtok(char *str, const char *delim);
+char **tokenize(char *arguments, char *delimiter);
 
 #endif /* _SHELL_H_ */
-

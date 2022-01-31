@@ -1,44 +1,128 @@
-.TH simple_shell "30 October 2021" "V1.0" "simple_shell man page"
-.SH NAME				
-.B simple_shell - Simple Unix comand interpreter	
-simple_shell: the shell or command interpreter is the computer program 
-that provides a user interface to access the services of the operating system.
-
-.SH SYNOPSYS				
-.B #include \fB"shell.h"
-
-./hsh
-/bin/[command] [option]
-[command] [option]
-
-.SH DESCRIPTION
-Shell is a user interface to use the services of a computer. 
-It can be a command-line interface –the one we will build- or graphical user interface, 
-like regular software such as Windows Office.
-
-.SH EXAMPLES
-$  /bin/ls -l
--rw-r--r-- 1 abina 197609  158 Oct 30 11:37 AUTHORS
--rw-r--r-- 1 abina 197609 3978 Oct 30 11:15 builtins.c
--rw-r--r-- 1 abina 197609 3934 Oct 30 11:16 f_alias_list.c
--rw-r--r-- 1 abina 197609 1083 Oct 30 11:16 f_builtin_utils.c
--rw-r--r-- 1 abina 197609 3018 Oct 30 11:16 f_command_handlers.c
--rw-r--r-- 1 abina 197609  754 Oct 30 11:14 f_error.c
--rw-r--r-- 1 abina 197609 1372 Oct 30 11:15 f_exit.c
-
-$  ls -l
--rw-r--r-- 1 abina 197609  158 Oct 30 11:37 AUTHORS
--rw-r--r-- 1 abina 197609 3978 Oct 30 11:15 builtins.c
--rw-r--r-- 1 abina 197609 3934 Oct 30 11:16 f_alias_list.c
--rw-r--r-- 1 abina 197609 1083 Oct 30 11:16 f_builtin_utils.c
--rw-r--r-- 1 abina 197609 3018 Oct 30 11:16 f_command_handlers.c
--rw-r--r-- 1 abina 197609  754 Oct 30 11:14 f_error.c
--rw-r--r-- 1 abina 197609 1372 Oct 30 11:15 f_exit.c
-
-.SH AUTHOR'S				
--Written by Meaza Lemma<>  and Ephrem Abebe <ephremyeabe@gmail.com>
-
-.SH BUGS
-There were no errors in the testing time of this code (October 30, 2021).
+.TH SIMPLE_SHELL "1" "22 December 2021" "Simple Shell Manpage" "simple_shell manpage"
+.SH NAME
+.B hsh -a simple holberton shell replacement
+.SH SYNOPSIS
+.B ./hsh
+.PP
+.SH Description
+This is a simple command language interpreter capable of executing commands read
+from standard input. This shell is also capable of having commands piped in from
+the background.
+.SH Overview
+The shell is a program that reads lines from either a file or the terminal,
+interprets them, and  executes other commands. Commands can be typed
+directly to the running shell or can be piped in.
+.SH Invocation
+Typically the shell will be run in interactive mode where input is accepted from
+the keyboard.In non-interactive mode, the shell is run from a script or
+something similar.This subshell only opens when the script is executed and
+subsequently closes once the script is finished.
+.SH BUILT-IN COMMANDS
+.RS information on built-in commands
+.PP
+.B env
+- writes environmental variable
+.PP
+.B getenv
+- get an environmental variable
+.PP
+.B setenv
+- change or add an environmental variable
+.PP
+.B unsetenv
+- deletes the variable name from the environment
+.SH Builtins
+.IP echo
+Arguments are printed on the standard output.
+.PP
+.IP exit
+Shell process is terminated, the return value of the subsequent command
+is used as the exit status. May be used with a second argument for a
+specific return value
+.IP pwd
+Remembers the current directory and prints it out.
+.IP printf
+Formats and prints arguments.
+.SH Command Exit Status
+A command exits with zero for success, any other value indicates failure
+or error.
+.SH Pipelines
+A pipeline is a sequence of commands separated by the | operator. The standard
+ouput of every command except the last is linked to the standard input of the
+next command. For the last command, the standard ouput is taken from the shell.
+.SH Special Parameters
+.IP *
+Expands to the positional parameters, beginning with one.
+.IP @
+Expands to the positional
+.IP #
+Expands to the number of positional parameters.
+.IP ?
+Expands to the exit status of the most recent pipeline.
+.IP - (Hyphen.)
+Expands to the current option flags as specified on invocation, by the set
+builtin command, or implicitly by the shell.
+.IP $
+Expands to the process ID of the invoked shell. A subshell retains the same
+vlaue of $ as its parent.
+.IP !
+Expands to the process ID of the most recent background command executed from
+the current shell. For a pipeline, the process ID is that of the last command in
+the pipeline.
+.IP 0 (Zero.)
+Expand to the name of the shell or shell script.
+.SH ENVIRONMENT
+.IP HOME
+Automatically set from the user's login direcotyr. Default argument for the
+cd builtin.
+.IP PATH
+Default search for executables.
+.IP CDPATH
+Search path for cd builtin.
+.IP PS1
+Prompt prompt string: the default is "$ ".
+.IP PS2
+Secondary prompt string: the default is "> ".
+.IP IFS
+Input Field Separators: <space>, <tab>, and <newline>.
+.IP TERM
+Default terminal setting for the shell -- utilized in history editing modes.
+.IP HISTSIZE
+Number of lines in the history buffer.
+.IP PWD
+The value of the current working directory that is set by cd.
+.IP OLDPWD
+Previous value of the current working directory that is set by cd.
+.IP PPID
+Proces ID of the parent process of the shell.
 .SH SEE ALSO
-sh
+bash(1), sh(1)
+.SH BUGS
+No known bugs.
+.SH Features to Add
+.SS Aliases
+.SS CD
+.SS History
+.SH AUTHORS
+Meaza Lemma <meazalemma2020@gmail.com>
+.PP
+Ephrem Abebe <ephremyeabe@gmail.com>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
