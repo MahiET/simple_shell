@@ -1,117 +1,117 @@
-Unix shell
+# 0x16. C - Simple Shell
 
-A Unix shell is a command-line interpreter or shell that provides a command line user interface for Unix-like operating systems. The shell is both an interactive command language and a scripting language, and is used by the operating system to control the execution of the system using shell scripts. 
+# Background Context
+Write a simple UNIX command interpreter. 
 
-Early shells
+**This is the task**
 
-The first Unix shell was the Thompson shell, sh, written by Ken Thompson at Bell Labs and distributed with Versions 1 through 6 of Unix, from 1971 to 1975. Though rudimentary by modern standards, it introduced many of the basic features common to all later Unix shells, including piping, simple control structures using if and go to, and filename wildcarding. Though not in current use, it is still available as part of some Ancient UNIX systems.
+## General
+- Who designed and implemented the original Unix operating system
+- Who wrote the first version of the UNIX shell
+- Who invented the B programming language (the direct predecessor to the C programming language)
+- Who is Ken Thompson
+- How does a shell work
+- What is a pid and a ppid
+- How to manipulate the environment of the current process
+- What is the difference between a function and a system call
+- How to create processes
+- What are the three prototypes of main
+- How does the shell use the PATH to find the programs
+- How to execute another program with the execve system call
+- How to suspend the execution of a process until one of its children terminates
+- What is EOF / “end-of-file”?
 
-The PWB shell or Mashey shell, sh, was an upward-compatible version of the Thompson shell, augmented by John Mashey and others and distributed with the Programmer's Workbench UNIX, circa 1975–1977. 
+## Features of the shell
 
-Bourne shell
+The end product should:
 
-The Bourne shell, sh, was a new Unix shell by Stephen Bourne at Bell Labs. Distributed as the shell for UNIX Version 7 in 1979, it introduced the rest of the basic features considered common to all the Unix shells, including here documents, command substitution, more generic variables and more extensive built-in control structures
+- Display a prompt and wait for the user to type a command. A command line always ends with a new line.
+- If an executable cannot be found, print an error message and display the prompt again.
+- Handle errors.
+- Handling the “end of file” condition (Ctrl+D)
+- Hanling the command line with arguments
+- Handle the PATH
+- Support the exit features and the exit status
+- Handle the Ctrl-C to not terminate the shell
+- Handling the command seperator ;
+- Handling && and || logical operators
+- Handle variable replacements $? and $$
+- Handle the comments #
+- Support the history feature
+- Support the file input
 
-The POSIX standard specifies its standard shell as a strict subset of the Korn shell, an enhanced version of the Bourne shell. From a user's perspective the Bourne shell was immediately recognized when active by its characteristic default command line prompt character, the dollar sign ($).
+<h2>More Info</h2>
 
-C shell
+<h3>List of allowed functions and system calls to create the shell</h3>
 
-The C shell, csh, was modeled on the C programming language, including the control structures and the expression grammar. It was written by Bill Joy as a graduate student at University of California, Berkeley, and was widely distributed with BSD Unix. 
+<ul>
+<li><code>access</code> (man 2 access)</li>
+<li><code>chdir</code> (man 2 chdir)</li>
+<li><code>close</code> (man 2 close)</li>
+<li><code>closedir</code> (man 3 closedir)</li>
+<li><code>execve</code> (man 2 execve)</li>
+<li><code>exit</code> (man 3 exit)</li>
+<li><code>_exit</code> (man 2 _exit)</li>
+<li><code>fflush</code> (man 3 fflush)</li>
+<li><code>fork</code> (man 2 fork)</li>
+<li><code>free</code> (man 3 free)</li>
+<li><code>getcwd</code> (man 3 getcwd)</li>
+<li><code>getline</code> (man 3 getline)</li>
+<li><code>isatty</code> (man 3 isatty)</li>
+<li><code>kill</code> (man 2 kill)</li>
+<li><code>malloc</code> (man 3 malloc)</li>
+<li><code>open</code> (man 2 open)</li>
+<li><code>opendir</code> (man 3 opendir)</li>
+<li><code>perror</code> (man 3 perror)</li>
+<li><code>read</code> (man 2 read)</li>
+<li><code>readdir</code> (man 3 readdir)</li>
+<li><code>signal</code> (man 2 signal)</li>
+<li><code>stat</code> (__xstat) (man 2 stat)</li>
+<li><code>lstat</code> (__lxstat) (man 2 lstat)</li>
+<li><code>fstat</code> (__fxstat) (man 2 fstat)</li>
+<li><code>strtok</code> (man 3 strtok)</li>
+<li><code>wait</code> (man 2 wait)</li>
+<li><code>waitpid</code> (man 2 waitpid)</li>
+<li><code>wait3</code> (man 2 wait3)</li>
+<li><code>wait4</code> (man 2 wait4)</li>
+<li><code>write</code> (man 2 write)</li>
+</ul>
 
+<h3>Compilation</h3>
 
+<p>Our shell will be compiled this way:</p>
 
-Basic lifetime of a shell
+<pre><code>gcc -Wall -Werror -Wextra -pedantic *.c -o hsh
+</code></pre>
 
-Let’s look at a shell from the top down. A shell does three main things in its lifetime.
+<h3>Running</h3>
 
-•Initialize: In this step, a typical shell would read and execute its configuration files. These change aspects of the shell’s behavior.
+<p>Interactive mode:</p>
 
-•Interpret: Next, the shell reads commands from stdin (which could be interactive, or a file) and executes them.
+<pre><code>$ ./hsh
+($) /bin/ls
+hsh main.c shell.c
+($)
+($) exit
+$
+</code></pre>
 
-•Terminate: After its commands are executed, the shell executes any shutdown commands, frees up any memory, 
+<p>Non-interactive mode:</p>
 
-Basic loop of a shell
+<pre><code>$ echo &quot;/bin/ls&quot; | ./hsh
+hsh main.c shell.c test_ls_2
+$
+$ cat test_ls_2
+/bin/ls
+/bin/ls
+$
+$ cat test_ls_2 | ./hsh
+hsh main.c shell.c test_ls_2
+hsh main.c shell.c test_ls_2
+$
+</code></pre>
 
-So, we’ve taken care of how the program should start up. Now, for the basic pro
-gram logic: what does the shell do during its loop? Well, a simple way to handl
-
-commands is with three steps:
-
-•Read: Read the command from standard input.
-
-•Parse: Separate the command string into a program and arguments.
-
-•Execute: Run the parsed command.
-
-Putting it all together
-
-That’s all the code that goes into the shell. If you’ve read along, you should understand completely how the shell works. To try it out (on a Linux machine), you would need to copy these code segments into a file (main.c), and compile it
-
-. Make sure to only include one implementation of lsh_read_line(). You’ll need to include the following headers at the top. I’ve added notes so that you know
-where each function comes from.
-
-•	#include <sys/wait.h>
-
-o	waitpid() and associated macros
-
-•	#include <unistd.h>
-
-o	chdir()
-
-o	fork()
-
-o	exec()
-
-o	pid_t
-
-•	#include <stdlib.h>
-
-o	malloc()
-
-o	realloc()
-
-o	free()
-
-o	exit()
-
-o	execvp()
-
-o	EXIT_SUCCESS, EXIT_FAILURE
-
-•	#include <stdio.h>
-
-o	fprintf()
-
-o	printf()
-
-o	stderr
-
-o	getchar()
-
-o	perror()
-
-•	#include <string.h>
-
-o	strcmp()
-
-o	strtok()
-
-
-Other comparison operators you can use include:
-
--eq – Equal to
-
--ne – Not equal to
-
--lt – Less than
-
--le – Less than or equal to
-
--lt – Less than
-
--ge – Greater than or equal to
-
-Authors
+### AUTHORS
 
 Meaza Lemma	Github	<meazalemma2020@gmail.com>
 
